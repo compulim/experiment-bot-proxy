@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat-es5.js"></script>
+    <style type="text/css">
+      body {
+        margin: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      main {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <main></main>
+    <script>
+      (async function () {
+        const TOKEN =
+          'eyJhbGciOiJSUzI1NiIsImtpZCI6IkJZM1pKV3ViOGJIeVdpcTJIaDJVNllFR2oySSIsIng1dCI6IkJZM1pKV3ViOGJIeVdpcTJIaDJVNllFR2oySSIsInR5cCI6IkpXVCJ9.eyJib3QiOiJ3ZWJjaGF0LW1vY2tib3QzIiwic2l0ZSI6ImpnVXZ5OXk0VEpJIiwiY29udiI6IkdqYjRnaWVtRHlDRFdjc0ViM0lMSmotdXMiLCJ1c2VyIjoiZGxfNDMwNHVkYXpiYzkiLCJvcmlnaW4iOlsiaHR0cHM6Ly9jb21wdWxpbS5naXRodWIuaW8vIiwiaHR0cHM6Ly9taWNyb3NvZnQuZ2l0aHViLmlvLyIsImh0dHBzOi8vd2ViY2hhdC1tb2NrYm90Mi5henVyZXdlYnNpdGVzLm5ldC8iXSwibmJmIjoxNjgxMzI1OTQyLCJleHAiOjE2ODEzMjk1NDIsImlzcyI6Imh0dHBzOi8vZGlyZWN0bGluZS5ib3RmcmFtZXdvcmsuY29tLyIsImF1ZCI6Imh0dHBzOi8vZGlyZWN0bGluZS5ib3RmcmFtZXdvcmsuY29tLyJ9.OxdO8PJvGJptklaBh6o8Ph6RRL_CpUorpnyAevWi1f58cKHlxbACG1PLGwU_44svEiDxzt0tirHoe7UySivrALa0LDTOJBjut6tVfTC56uSrxhFGXX_-vWF6cipvoQadU5q2g9d27AJY9HZwIDre3Oab46oGejRWQn47y1zQrz59acHGeJPpsJNneP33eYqav7z_Cipe8N7LRS7Nk_9m_6c4k3XpnMWy-xBjIZogvENZGyr9qQ7LKzvbu_BRE2R0im9wBMNTMZAODyKp-nJ7SS9ZGgvUe2n0k0ZZFeMOyvHxmKwOV1855o_AArZoSdqnqaFAutmCqU7Yg0w6TCAaGQ';
+
+        renderWebChat(
+          {
+            directLine: WebChat.createDirectLine({ domain: 'http://localhost:3000/v3/directline', token: TOKEN })
+          },
+          document.getElementsByTagName('main')[0]
+        );
+      })();
+    </script>
+  </body>
+</html>
