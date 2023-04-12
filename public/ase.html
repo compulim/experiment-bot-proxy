@@ -21,15 +21,15 @@
     <main></main>
     <script>
       (async function () {
-        // Direct Line
+        // Direct Line ASE
 
         const { token } = await (
-          await fetch('https://webchat-mockbot.azurewebsites.net/directline/token', { method: 'POST' })
+          await fetch('https://webchat-mockbot3.azurewebsites.net/api/token/directlinease', { method: 'POST' })
         ).json();
 
         renderWebChat(
           {
-            directLine: WebChat.createDirectLine({ domain: 'http://localhost:3000/v3/directline', token })
+            directLine: await WebChat.createDirectLineAppServiceExtension({ domain: 'http://localhost:3000/.bot/v3/directline', token })
           },
           document.getElementsByTagName('main')[0]
         );
