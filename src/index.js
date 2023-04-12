@@ -17,12 +17,15 @@ app.use(
   createProxyMiddleware({
     target: 'https://directline.botframework.com/',
     changeOrigin: true,
-    onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-      if (req.method === 'POST' && req.url === '/v3/directline/conversations') {
+    onProxyRes: responseInterceptor(async (responseBuffer, { statusCode }, { method, url }, res) => {
+      if (statusCode >= 200 && statusCode < 300 && method === 'POST' && url === '/v3/directline/conversations') {
         const body = responseBuffer.toString('utf8');
         const json = JSON.parse(body);
 
-        json.streamUrl = json.streamUrl.replace(/^wss:\/\/directline.botframework.com\/v3\/directline\//, 'ws://localhost:3000/v3/directline/');
+        json.streamUrl = json.streamUrl.replace(
+          /^wss:\/\/directline.botframework.com\/v3\/directline\//,
+          'ws://localhost:3000/v3/directline/'
+        );
 
         return JSON.stringify(json);
       }
