@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat-es5.js"></script>
+    <script src="http://localhost:5000/directline.js"></script>
     <style type="text/css">
       body {
         margin: 0;
@@ -27,9 +28,36 @@
           await fetch('https://webchat-mockbot3.azurewebsites.net/api/token/directlinease', { method: 'POST' })
         ).json();
 
+        const store = WebChat.createStore({}, () => next => action => {
+          action.type.startsWith('DIRECT_LINE/') && console.log('%c YYY %c Redux %c%s%c', 'background-color: #3C3; color: White;', '', 'color: Green;', action.type, '');
+
+          return next(action);
+        });
+
+        const directLine = new DirectLine.DirectLineStreaming({
+          domain: 'http://localhost:3000/.bot/v3/directline',
+          token
+        });
+
+        const CONNECTION_STATUS = ['Uninitialized', 'Connecting', 'Online', 'ExpiredToken', 'FailedToConnect', 'Ended'];
+
+        directLine.connectionStatus$.subscribe({
+          complete() {
+            console.log(`%c ZZZ %c connectionStatus$.complete()`, 'background-color: Blue; color: White;', '');
+          },
+          error() {
+            console.log(`%c ZZZ %c connectionStatus$.error()`, 'background-color: Blue; color: White;', '');
+          },
+          next(value) {
+            console.log(`%c ZZZ %c connectionStatus$.next(%c${CONNECTION_STATUS[value] || value}%c)`, 'background-color: Blue; color: White;', '', 'color: Magenta;', '');
+          }
+        });
+
         renderWebChat(
           {
-            directLine: await WebChat.createDirectLineAppServiceExtension({ domain: 'http://localhost:3000/.bot/v3/directline', token })
+            // directLine: await WebChat.createDirectLineAppServiceExtension({ domain: 'http://localhost:3000/.bot/v3/directline', token })
+            directLine,
+            store
           },
           document.getElementsByTagName('main')[0]
         );
