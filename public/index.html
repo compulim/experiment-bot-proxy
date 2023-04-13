@@ -27,9 +27,19 @@
           await fetch('https://webchat-mockbot.azurewebsites.net/directline/token', { method: 'POST' })
         ).json();
 
+        const log = (arg0, ...args) => {
+          console.log(
+            `%c%s%c ${arg0}`,
+            'font-family: sans-serif; font-size: smaller;',
+            new Date().toISOString(),
+            '',
+            ...args
+          );
+        };
+
         const store = WebChat.createStore({}, () => next => action => {
           action.type.startsWith('DIRECT_LINE/') &&
-            console.log(
+            log(
               '%c YYY %c Redux %c%s%c',
               'background-color: #3C3; color: White;',
               '',
@@ -47,13 +57,13 @@
 
         directLine.connectionStatus$.subscribe({
           complete() {
-            console.log(`%c ZZZ %c connectionStatus$.complete()`, 'background-color: Blue; color: White;', '');
+            log(`%c ZZZ %c connectionStatus$.complete()`, 'background-color: Blue; color: White;', '');
           },
           error() {
-            console.log(`%c ZZZ %c connectionStatus$.error()`, 'background-color: Blue; color: White;', '');
+            log(`%c ZZZ %c connectionStatus$.error()`, 'background-color: Blue; color: White;', '');
           },
           next(value) {
-            console.log(
+            log(
               `%c ZZZ %c connectionStatus$.next(%c${CONNECTION_STATUS[value] || value}%c)`,
               'background-color: Blue; color: White;',
               '',
