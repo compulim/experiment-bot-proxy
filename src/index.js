@@ -1,5 +1,5 @@
 import { createProxyMiddleware, responseInterceptor } from 'http-proxy-middleware';
-import express, { static as createStatic } from 'express';
+import express, { Router, static as createStatic } from 'express';
 
 const { PORT = 3000 } = process.env;
 
@@ -7,54 +7,54 @@ const app = express();
 
 app.use('/', createStatic('./public'));
 
-app.use(
-  '/.bot',
-  createProxyMiddleware({
-    target: 'https://webchat-mockbot3.azurewebsites.net/',
-    changeOrigin: true,
-    onProxyReqWs: (proxyReq, req, socket, options, head) => {
-      console.log('Connecting to DLASE', req.url);
-    },
-    ws: true
-  })
-);
+app.use('/.bot', createProxyMiddleware({ changeOrigin: true, target: 'https://webchat-mockbot3.azurewebsites.net/' }));
 
 app.use(
   ['/v3/directline/conversations', '/v3/directline/conversations/:id'],
   createProxyMiddleware({
-    target: 'https://directline.botframework.com/',
     changeOrigin: true,
     onProxyRes: responseInterceptor(async (responseBuffer, { statusCode }) => {
       if (statusCode >= 200 && statusCode < 300) {
-        const body = responseBuffer.toString('utf8');
-        const json = JSON.parse(body);
+        try {
+          const json = JSON.parse(responseBuffer.toString('utf8'));
 
-        if (json.streamUrl) {
-          json.streamUrl = json.streamUrl.replace(
-            /^wss:\/\/directline.botframework.com\/v3\/directline\//,
-            'ws://localhost:3000/v3/directline/'
-          );
+          if (json.streamUrl) {
+            json.streamUrl = json.streamUrl.replace(
+              /^wss:\/\/directline.botframework.com\/v3\/directline\//,
+              `ws://localhost:${PORT}/v3/directline/`
+            );
 
-          return JSON.stringify(json);
+            return JSON.stringify(json);
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
 
       return responseBuffer;
     }),
     selfHandleResponse: true,
-    ws: true
+    target: 'https://directline.botframework.com/'
   })
 );
 
 app.use(
   '/v3/directline',
-  createProxyMiddleware({
-    target: 'https://directline.botframework.com/',
-    changeOrigin: true,
-    ws: true
-  })
+  createProxyMiddleware({ changeOrigin: true, target: 'https://directline.botframework.com/' })
 );
 
-app.listen(PORT, () => {
-  console.log(`Listening to port ${PORT}`);
-});
+app
+  .listen(PORT, async () => {
+    console.log(`Listening to port ${PORT}.`);
+  })
+  .on(
+    'upgrade',
+    createProxyMiddleware({
+      changeOrigin: true,
+      router: {
+        '/.bot': 'https://webchat-mockbot3.azurewebsites.net/'
+      },
+      target: 'https://directline.botframework.com/',
+      ws: true
+    }).upgrade
+  );
